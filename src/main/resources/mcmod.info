@@ -1,0 +1,16 @@
+[
+    {
+        "modid": "snb",
+        "name": "Skin&Bones",
+        "description": "Allows to embed animations into Minecraft via Metamorph",
+        "version": "${version}",
+        "mcversion": "${mcversion}",
+        "url": "",
+        "updateUrl": "",
+        "authorList": ["mchorse"],
+        "credits": "The Forge and FML guys, for making this example",
+        "logoFile": "",
+        "screenshots": [],
+        "dependencies": ["mclib", "metamorph"]
+    }
+]

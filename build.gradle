@@ -1,0 +1,67 @@
+buildscript 
+{
+    repositories 
+    {
+        jcenter()
+        maven { url = "http://files.minecraftforge.net/maven" }
+    }
+    
+    dependencies 
+    {
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+    }
+}
+
+apply plugin: 'net.minecraftforge.gradle.forge'
+
+group = "mchorse.skin_n_bones"
+archivesBaseName = "skin_n_bones"
+sourceCompatibility = targetCompatibility = "1.8"
+
+if (project.hasProperty("dev")) 
+{
+    version += "-dev" + dev
+}
+
+compileJava 
+{
+    sourceCompatibility = targetCompatibility = "1.8"
+}
+
+minecraft 
+{
+    version = "${mc_version}-${forge_version}"
+    runDir = "run"
+    mappings = snapshot
+    
+    clientJvmArgs = ["-Xmx1G"]
+    serverJvmArgs = ["-Xmx1G"]
+    
+    replace "%VERSION%", project.version
+    replace "%MCLIB%", project.mclib
+    replace "%METAMORPH%", project.metamorph
+}
+
+dependencies 
+{
+    compile files("run/libs/metamorph-${metamorph}-${project.minecraft.version}-dev.jar")
+    compile files("run/libs/mclib-${mclib}-${project.minecraft.version}-dev.jar")
+}
+
+processResources
+{
+    inputs.property "version", project.version
+    inputs.property "mcversion", project.minecraft.version
+
+    project.version += "-" + project.minecraft.version
+
+    from(sourceSets.main.resources.srcDirs) {
+        include 'mcmod.info'
+                
+        expand 'version':project.version, 'mcversion':project.minecraft.version
+    }
+        
+    from(sourceSets.main.resources.srcDirs) {
+        exclude 'mcmod.info'
+    }
+}
