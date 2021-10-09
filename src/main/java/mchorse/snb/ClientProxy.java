@@ -3,12 +3,14 @@ package mchorse.snb;
 import mchorse.mclib.utils.files.GlobalTree;
 import mchorse.snb.api.animation.AnimationPack;
 import mchorse.snb.client.EntityModelHandler;
+import mchorse.snb.commands.CommandSnB;
 import mchorse.snb.utils.SnBTree;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.client.resources.IResourcePack;
 import net.minecraft.client.resources.SimpleReloadableResourceManager;
+import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -123,5 +125,7 @@ public class ClientProxy extends CommonProxy
 
         /* Register event handlers */
         MinecraftForge.EVENT_BUS.register(modelHandler = new EntityModelHandler());
+
+        ClientCommandHandler.instance.registerCommand(new CommandSnB());
     }
 }

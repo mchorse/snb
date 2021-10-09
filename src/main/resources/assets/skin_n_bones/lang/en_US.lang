@@ -1,5 +1,15 @@
 #PARSE_ESCAPES
 
+# Config
+
+snb.config.title=Skin&Bones
+
+snb.config.general.title=General
+snb.config.general.tooltip=General options
+
 # GUI
+
 morph.section.snb=S&B
 morph.category.snb=User models
+
+skin_n_bones.commands.usage=Skin&Bones command. This command provides some functions to manage Skin&Bones mod's features.\n\n/snb clear - reloads S&B's textures\n/snb reload - reloads S&B's models
