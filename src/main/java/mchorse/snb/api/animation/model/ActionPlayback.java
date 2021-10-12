@@ -1,5 +1,6 @@
 package mchorse.snb.api.animation.model;
 
+import mchorse.mclib.utils.MathUtils;
 import mchorse.snb.api.bobj.BOBJAction;
 import mchorse.snb.api.bobj.BOBJArmature;
 import mchorse.snb.api.bobj.BOBJBone;
@@ -7,40 +8,47 @@ import mchorse.snb.api.bobj.BOBJGroup;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import java.util.List;
+
 @SideOnly(Side.CLIENT)
 public class ActionPlayback
 {
-    public BOBJAction action;
+    public List<BOBJAction> actions;
     public ActionConfig config;
 
     private int fade;
     private float ticks;
-    private int duration;
     private float speed = 1;
 
-    private boolean looping = false;
-    private boolean fading = false;
+    private boolean looping;
+    private boolean fading;
     public boolean playing = true;
     public int priority;
 
-    public ActionPlayback(BOBJAction action, ActionConfig config)
+    private BOBJAction current;
+
+    public ActionPlayback(List<BOBJAction> actions, ActionConfig config)
     {
-        this(action, config, true);
+        this(actions, config, true);
     }
 
-    public ActionPlayback(BOBJAction action, ActionConfig config, boolean looping)
+    public ActionPlayback(List<BOBJAction> actions, ActionConfig config, boolean looping)
     {
-        this.action = action;
+        this.actions = actions;
         this.config = config;
-        this.duration = action.getDuration();
         this.looping = looping;
         this.setSpeed(1);
     }
 
-    public ActionPlayback(BOBJAction action, ActionConfig config, boolean looping, int priority)
+    public ActionPlayback(List<BOBJAction> actions, ActionConfig config, boolean looping, int priority)
     {
-        this(action, config, looping);
+        this(actions, config, looping);
         this.priority = priority;
+    }
+
+    private int getDuration()
+    {
+        return this.current == null ? 0 : this.current.getDuration();
     }
 
     /* Action playback control methods */
@@ -50,9 +58,13 @@ public class ActionPlayback
      */
     public void reset()
     {
+        int index = this.actions.indexOf(this.current);
+
+        this.current = this.actions.get(MathUtils.cycler(index + 1, 0, this.actions.size() - 1));
+
         if (this.config.reset)
         {
-            this.ticks = Math.copySign(1, this.speed) < 0 ? this.duration : 0;
+            this.ticks = Math.copySign(1, this.speed) < 0 ? this.getDuration() : 0;
         }
 
         this.unfade();
@@ -63,7 +75,7 @@ public class ActionPlayback
      */
     public boolean finishedFading()
     {
-        return this.fading == true && this.fade <= 0;
+        return this.fading && this.fade <= 0;
     }
 
     /**
@@ -71,7 +83,7 @@ public class ActionPlayback
      */
     public boolean isFading()
     {
-        return this.fading == true && this.fade > 0;
+        return this.fading && this.fade > 0;
     }
 
     /**
@@ -126,21 +138,21 @@ public class ActionPlayback
 
         this.ticks += this.speed;
 
-        if (!this.looping && !this.fading && this.ticks >= this.duration)
+        if (!this.looping && !this.fading && this.ticks >= this.getDuration())
         {
             this.fade();
         }
 
         if (this.looping)
         {
-            if (this.ticks >= this.duration && this.speed > 0 && this.config.clamp)
+            if (this.ticks >= this.getDuration() && this.speed > 0 && this.config.clamp)
             {
-                this.ticks -= this.duration;
+                this.ticks -= this.getDuration();
                 this.ticks += this.config.tick;
             }
             else if (this.ticks < 0 && this.speed < 0 && this.config.clamp)
             {
-                this.ticks = this.duration + this.ticks;
+                this.ticks = this.getDuration() + this.ticks;
                 this.ticks -= this.config.tick;
             }
         }
@@ -152,13 +164,13 @@ public class ActionPlayback
 
         if (this.looping)
         {
-            if (ticks >= this.duration && this.speed > 0 && this.config.clamp)
+            if (ticks >= this.getDuration() && this.speed > 0 && this.config.clamp)
             {
-                ticks -= this.duration;
+                ticks -= this.getDuration();
             }
             else if (this.ticks < 0 && this.speed < 0 && this.config.clamp)
             {
-                ticks = this.duration + ticks;
+                ticks = this.getDuration() + ticks;
             }
         }
 
@@ -167,7 +179,12 @@ public class ActionPlayback
 
     public void apply(BOBJArmature armature, float partialTick)
     {
-        for (BOBJGroup group : this.action.groups.values())
+        if (this.current == null)
+        {
+            return;
+        }
+
+        for (BOBJGroup group : this.current.groups.values())
         {
             BOBJBone bone = armature.bones.get(group.name);
 
@@ -180,7 +197,12 @@ public class ActionPlayback
 
     public void applyInactive(BOBJArmature armature, float partialTick, float x)
     {
-        for (BOBJGroup group : this.action.groups.values())
+        if (this.current == null)
+        {
+            return;
+        }
+
+        for (BOBJGroup group : this.current.groups.values())
         {
             BOBJBone bone = armature.bones.get(group.name);
 

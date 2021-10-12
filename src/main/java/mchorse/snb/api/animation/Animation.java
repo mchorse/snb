@@ -11,6 +11,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL15;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -86,7 +87,7 @@ public class Animation
         }
 
         /* If old is the same, then there is no point creating a new one */
-        if (old != null && old.action == action)
+        if (old != null && old.actions == action)
         {
             old.config = config;
             old.setSpeed(1);
@@ -94,7 +95,21 @@ public class Animation
             return old;
         }
 
-        return new ActionPlayback(action, config, looping, priority);
+        List<BOBJAction> actions = new ArrayList<BOBJAction>();
+
+        actions.add(action);
+
+        for (String key : this.data.actions.keySet())
+        {
+            if (key.startsWith(config.name + ":"))
+            {
+                actions.add(this.data.actions.get(key));
+            }
+        }
+
+        actions.sort(Comparator.comparing(a -> a.name));
+
+        return new ActionPlayback(actions, config, looping, priority);
     }
 
     /**
