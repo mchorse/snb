@@ -26,6 +26,7 @@ public class GuiActionsPanel extends GuiMorphPanel<AnimatedMorph, GuiAnimatedMor
     public GuiElement fields;
     public GuiStringSearchListElement action;
     public GuiToggleElement clamp;
+    public GuiToggleElement randomVariant;
     public GuiToggleElement reset;
     public GuiTrackpadElement speed;
     public GuiTrackpadElement fade;
@@ -48,6 +49,8 @@ public class GuiActionsPanel extends GuiMorphPanel<AnimatedMorph, GuiAnimatedMor
 
         this.action = new GuiStringSearchListElement(mc, (value) -> this.config.name = value.get(0));
         this.clamp = new GuiToggleElement(mc, IKey.str("Clamp"), false, (b) -> this.config.clamp = b.isToggled());
+        this.randomVariant = new GuiToggleElement(mc, IKey.str("Random variant"), false, (b) -> this.config.randomVariant = b.isToggled());
+        this.randomVariant.tooltip(IKey.str("Everytime the action is executed choose a random variant, if variants are present"));
         this.reset = new GuiToggleElement(mc, IKey.str("Reset"), false, (b) -> this.config.reset = b.isToggled());
         this.speed = new GuiTrackpadElement(mc, (value) -> this.config.speed = value.floatValue());
         this.speed.tooltip(IKey.str("Speed"));
@@ -61,7 +64,7 @@ public class GuiActionsPanel extends GuiMorphPanel<AnimatedMorph, GuiAnimatedMor
         GuiElement fields = new GuiElement(mc);
 
         fields.flex().relative(this).xy(1F, 1F).w(130).anchor(1, 1).column(5).vertical().stretch().padding(10);
-        fields.add(this.clamp, this.reset, this.speed, this.fade, this.tick);
+        fields.add(this.clamp, this.randomVariant, this.reset, this.speed, this.fade, this.tick);
 
         this.action.flex().relative(this.area).x(1F, -10).y(22).w(110).hTo(fields.area, 5).anchorX(1F);
 
@@ -113,6 +116,7 @@ public class GuiActionsPanel extends GuiMorphPanel<AnimatedMorph, GuiAnimatedMor
     {
         this.action.list.setCurrentScroll(config.name);
         this.clamp.toggled(config.clamp);
+        this.randomVariant.toggled(config.randomVariant);
         this.reset.toggled(config.reset);
         this.speed.setValue(config.speed);
         this.fade.setValue((int) config.fade);

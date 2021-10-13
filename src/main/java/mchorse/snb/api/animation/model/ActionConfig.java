@@ -10,6 +10,7 @@ public class ActionConfig
     public String name = "";
     public boolean clamp = true;
     public boolean reset = true;
+    public boolean randomVariant;
     public float speed = 1;
     public float fade = 5;
     public int tick = 0;
@@ -32,6 +33,7 @@ public class ActionConfig
         config.speed = this.speed;
         config.fade = this.fade;
         config.tick = this.tick;
+        config.randomVariant = this.randomVariant;
 
         return config;
     }
@@ -43,6 +45,7 @@ public class ActionConfig
             NBTTagCompound tag = (NBTTagCompound) base;
 
             if (tag.hasKey("Name", NBT.TAG_STRING)) this.name = tag.getString("Name");
+            if (tag.hasKey("RandomAction", NBT.TAG_ANY_NUMERIC)) this.randomVariant = tag.getBoolean("RandomAction");
             if (tag.hasKey("Clamp", NBT.TAG_ANY_NUMERIC)) this.clamp = tag.getBoolean("Clamp");
             if (tag.hasKey("Reset", NBT.TAG_ANY_NUMERIC)) this.reset = tag.getBoolean("Reset");
             if (tag.hasKey("Speed", NBT.TAG_ANY_NUMERIC)) this.speed = tag.getFloat("Speed");
@@ -65,8 +68,9 @@ public class ActionConfig
         NBTTagCompound tag = new NBTTagCompound();
 
         if (!this.name.isEmpty()) tag.setString("Name", this.name);
-        if (this.clamp != true) tag.setBoolean("Clamp", this.clamp);
-        if (this.reset != true) tag.setBoolean("Reset", this.reset);
+        if (!this.clamp) tag.setBoolean("Clamp", this.clamp);
+        if (this.randomVariant) tag.setBoolean("RandomAction", this.randomVariant);
+        if (!this.reset) tag.setBoolean("Reset", this.reset);
         if (this.speed != 1) tag.setFloat("Speed", this.speed);
         if (this.fade != 5) tag.setInteger("Fade", (int) this.fade);
         if (this.tick != 0) tag.setInteger("Tick", this.tick);
@@ -76,6 +80,6 @@ public class ActionConfig
 
     public boolean isDefault()
     {
-        return this.clamp && this.reset && this.speed == 1 && this.fade == 5 && this.tick == 0;
+        return this.clamp && !this.randomVariant && this.reset && this.speed == 1 && this.fade == 5 && this.tick == 0;
     }
 }

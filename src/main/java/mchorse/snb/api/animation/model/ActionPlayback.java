@@ -60,7 +60,14 @@ public class ActionPlayback
     {
         int index = this.actions.indexOf(this.current);
 
-        this.current = this.actions.get(MathUtils.cycler(index + 1, 0, this.actions.size() - 1));
+        if(this.config.randomVariant)
+        {
+            this.current = this.actions.get((int) Math.round(Math.random()*(this.actions.size()-1)));
+        }
+        else
+        {
+            this.current = this.actions.get(MathUtils.cycler(index + 1, 0, this.actions.size() - 1));
+        }
 
         if (this.config.reset)
         {
