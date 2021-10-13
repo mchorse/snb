@@ -50,7 +50,7 @@ public class GuiActionsPanel extends GuiMorphPanel<AnimatedMorph, GuiAnimatedMor
         this.action = new GuiStringSearchListElement(mc, (value) -> this.config.name = value.get(0));
         this.clamp = new GuiToggleElement(mc, IKey.str("Clamp"), false, (b) -> this.config.clamp = b.isToggled());
         this.randomVariant = new GuiToggleElement(mc, IKey.str("Random variant"), false, (b) -> this.config.randomVariant = b.isToggled());
-        this.randomVariant.tooltip(IKey.str("Everytime the action is executed it chooses a random variant, if variants are present"));
+        this.randomVariant.tooltip(IKey.str("Every time the action is executed it chooses a random variant, if variants are present"));
         this.reset = new GuiToggleElement(mc, IKey.str("Reset"), false, (b) -> this.config.reset = b.isToggled());
         this.speed = new GuiTrackpadElement(mc, (value) -> this.config.speed = value.floatValue());
         this.speed.tooltip(IKey.str("Speed"));

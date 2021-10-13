@@ -62,7 +62,7 @@ public class ActionPlayback
 
         if(this.config.randomVariant)
         {
-            this.current = this.actions.get((int) Math.round(Math.random()*(this.actions.size()-1)));
+            this.current = this.actions.get((int) (Math.random() * this.actions.size()));
         }
         else
         {
