@@ -166,6 +166,8 @@ public class AnimationMesh
      */
     public void updateMesh()
     {
+        int max = this.data.maxWeights;
+
         Vector4f sumVertex = new Vector4f();
         Vector4f resultVertex = new Vector4f(0, 0, 0, 0);
 
@@ -184,13 +186,13 @@ public class AnimationMesh
         {
             int count = 0;
 
-            for (int w = 0; w < 4; w++)
+            for (int w = 0; w < max; w++)
             {
-                float weight = this.data.weightData[i * 4 + w];
+                float weight = this.data.weightData[i * max + w];
 
                 if (weight > 0)
                 {
-                    int index = this.data.boneIndexData[i * 4 + w];
+                    int index = this.data.boneIndexData[i * max + w];
 
                     sumVertex.set(oldVertices[i * 4], oldVertices[i * 4 + 1], oldVertices[i * 4 + 2], oldVertices[i * 4 + 3]);
                     matrices[index].transform(sumVertex);
