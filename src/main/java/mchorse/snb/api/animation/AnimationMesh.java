@@ -166,8 +166,6 @@ public class AnimationMesh
      */
     public void updateMesh()
     {
-        int max = this.data.maxWeights;
-
         Vector4f sumVertex = new Vector4f();
         Vector4f resultVertex = new Vector4f(0, 0, 0, 0);
 
@@ -186,15 +184,15 @@ public class AnimationMesh
         {
             int count = 0;
 
-            for (int w = 0; w < max; w++)
+            for (int w = 0; w < 4; w++)
             {
-                float weight = this.data.weightData[i * max + w];
+                float weight = this.data.weightData[i * 4 + w];
 
                 if (weight > 0)
                 {
-                    int index = this.data.boneIndexData[i * max + w];
+                    int index = this.data.boneIndexData[i * 4 + w];
 
-                    sumVertex.set(oldVertices[i * 4], oldVertices[i * 4 + 1], oldVertices[i * 4 + 2], 1);
+                    sumVertex.set(oldVertices[i * 4], oldVertices[i * 4 + 1], oldVertices[i * 4 + 2], oldVertices[i * 4 + 3]);
                     matrices[index].transform(sumVertex);
                     sumVertex.scale(weight);
                     resultVertex.add(sumVertex);
@@ -214,10 +212,15 @@ public class AnimationMesh
                 resultVertex.set(oldVertices[i * 4], oldVertices[i * 4 + 1], oldVertices[i * 4 + 2], 1);
             }
 
+            /* Thanks MiaoNLI for the fix insight! */
+            resultVertex.x /= resultVertex.w;
+            resultVertex.y /= resultVertex.w;
+            resultVertex.z /= resultVertex.w;
+
             newVertices[i * 4] = resultVertex.x;
             newVertices[i * 4 + 1] = resultVertex.y;
             newVertices[i * 4 + 2] = resultVertex.z;
-            newVertices[i * 4 + 3] = resultVertex.w;
+            newVertices[i * 4 + 3] = 1;
 
             newNormals[i * 3] = resultNormal.x;
             newNormals[i * 3 + 1] = resultNormal.y;
