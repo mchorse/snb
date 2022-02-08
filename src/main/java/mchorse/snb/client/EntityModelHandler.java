@@ -26,6 +26,7 @@ import org.apache.commons.io.FileUtils;
 import java.io.File;
 import java.io.FileInputStream;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
@@ -185,7 +186,7 @@ public class EntityModelHandler
 
             try
             {
-                String json = FileUtils.readFileToString(file, Charset.defaultCharset());
+                String json = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
 
                 if (json.isEmpty())
                 {
