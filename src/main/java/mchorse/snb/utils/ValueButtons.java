@@ -27,7 +27,7 @@ public class ValueButtons extends ValueGUI
     {
         GuiButtonElement button = new GuiButtonElement(mc, IKey.str("Open models folder..."), (b) ->
         {
-            GuiUtils.openWebLink(ClientProxy.pack.config.toURI());
+            GuiUtils.openFolder(ClientProxy.pack.config.getAbsolutePath());
         });
 
         return Arrays.asList(button);
