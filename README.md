@@ -4,4 +4,4 @@ This project is abandoned. You can continue, if you want to, but give me proper 
 
 # License
 
-S&B mod's code is licensed under MIT license. See [LICENSE.md](./LICENSE.md) file for more information about the license.
+S&B mod's code is licensed under GNU GPL v3.0 license. See [LICENSE](./LICENSE) file for more information about the license.
