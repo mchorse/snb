@@ -6,7 +6,7 @@
         "version": "${version}",
         "mcversion": "${mcversion}",
         "url": "",
-        "updateUrl": "",
+        "updateUrl": "https://raw.githubusercontent.com/mchorse/snb/main/version.json",
         "authorList": ["mchorse"],
         "credits": "The Forge and FML guys, for making this example",
         "logoFile": "",

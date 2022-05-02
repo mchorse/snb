@@ -11,7 +11,7 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-@Mod(modid = SnB.MOD_ID, name = "Skin&Bones", version = SnB.VERSION, dependencies = "required-after:mclib@[%MCLIB%,);required-after:metamorph@[%METAMORPH%,)")
+@Mod(modid = SnB.MOD_ID, name = "Skin&Bones", version = SnB.VERSION, dependencies = "required-after:mclib@[%MCLIB%,);required-after:metamorph@[%METAMORPH%,)", updateJSON = "https://raw.githubusercontent.com/mchorse/snb/main/version.json")
 public final class SnB
 {
     public static final String MOD_ID = "snb";
