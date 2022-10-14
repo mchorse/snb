@@ -1,3 +1,12 @@
+## Version 1.4.1
+
+This update was made by Chryfi and MiaoNLI.
+
+**Compatible** with McLib `2.4.1` and Metamorph `1.3.1`. It doesn't mean that future versions of McLib, Blockbuster and Metamorph would be incompatible, but older versions are most likely incompatible.
+
+* Added local / global translation (by Chryfi)
+* Fixed NPE crash in getCurrentPose method due to missing model (by MiaoNLI)
+
 ## Version 1.4
 
 This update was made by MiaoNLI
@@ -15,7 +24,7 @@ This update was made by MiaoNLI
     * Compatible with OptiFine shaders
 * File Encoding
     * UTF-8 file encoding is used by default
-    
+
 ## Version 1.3.3
 
 This patch fixes stretching shadow and weird right hand extrusion thanks to MiaoNLI's discovery.
