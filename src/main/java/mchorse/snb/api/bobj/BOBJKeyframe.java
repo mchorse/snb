@@ -9,7 +9,7 @@ import net.minecraft.util.math.MathHelper;
  */
 public class BOBJKeyframe
 {
-    public int frame;
+    public float frame;
     public float value;
     public Interpolation interpolation = Interpolation.LINEAR;
 
@@ -33,15 +33,15 @@ public class BOBJKeyframe
             float rightX = Float.parseFloat(tokens[6]);
             float rightY = Float.parseFloat(tokens[7]);
 
-            return new BOBJKeyframe(Integer.parseInt(tokens[1]), Float.parseFloat(tokens[2]), tokens[3], leftX, leftY, rightX, rightY);
+            return new BOBJKeyframe(Float.parseFloat(tokens[1]), Float.parseFloat(tokens[2]), tokens[3], leftX, leftY, rightX, rightY);
         }
         else if (tokens.length == 4)
         {
-            return new BOBJKeyframe(Integer.parseInt(tokens[1]), Float.parseFloat(tokens[2]), tokens[3]);
+            return new BOBJKeyframe(Float.parseFloat(tokens[1]), Float.parseFloat(tokens[2]), tokens[3]);
         }
         else if (tokens.length == 3)
         {
-            return new BOBJKeyframe(Integer.parseInt(tokens[1]), Float.parseFloat(tokens[2]));
+            return new BOBJKeyframe(Float.parseFloat(tokens[1]), Float.parseFloat(tokens[2]));
         }
 
         return null;
@@ -72,20 +72,20 @@ public class BOBJKeyframe
         return min + (max - min) * x;
     }
 
-    public BOBJKeyframe(int frame, float value)
+    public BOBJKeyframe(float frame, float value)
     {
         this.frame = frame;
         this.value = value;
     }
 
-    public BOBJKeyframe(int frame, float value, String interp)
+    public BOBJKeyframe(float frame, float value, String interp)
     {
         this(frame, value);
 
         this.interpolation = interpolationFromString(interp);
     }
 
-    public BOBJKeyframe(int frame, float value, String interp, float leftX, float leftY, float rightX, float rightY)
+    public BOBJKeyframe(float frame, float value, String interp, float leftX, float leftY, float rightX, float rightY)
     {
         this(frame, value, interp);
 

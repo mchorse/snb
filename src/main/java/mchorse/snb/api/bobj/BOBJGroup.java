@@ -39,7 +39,7 @@ public class BOBJGroup
 
             if (size > 0)
             {
-                max = Math.max(max, channel.keyframes.get(size - 1).frame);
+                max = Math.max(max, Math.round(channel.keyframes.get(size - 1).frame));
             }
         }
 
