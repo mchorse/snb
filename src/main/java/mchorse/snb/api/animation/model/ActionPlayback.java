@@ -9,6 +9,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
+import java.util.Objects;
 
 @SideOnly(Side.CLIENT)
 public class ActionPlayback
@@ -218,5 +219,24 @@ public class ActionPlayback
                 group.applyInterpolate(bone, this.ticks, x);
             }
         }
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (super.equals(obj))
+        {
+            return true;
+        }
+
+        if (obj instanceof ActionPlayback)
+        {
+            ActionPlayback action = (ActionPlayback) obj;
+
+            return Objects.equals(this.actions, action.actions)
+                && Objects.equals(this.config, action.config);
+        }
+
+        return false;
     }
 }

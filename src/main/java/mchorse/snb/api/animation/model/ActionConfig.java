@@ -5,6 +5,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraftforge.common.util.Constants.NBT;
 
+import java.util.Objects;
+
 public class ActionConfig
 {
     public String name = "";
@@ -21,6 +23,30 @@ public class ActionConfig
     public ActionConfig(String name)
     {
         this.name = name;
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (super.equals(obj))
+        {
+            return true;
+        }
+
+        if (obj instanceof ActionConfig)
+        {
+            ActionConfig config = (ActionConfig) obj;
+
+            return Objects.equals(this.name, config.name)
+                && this.clamp == config.clamp
+                && this.reset == config.reset
+                && this.randomVariant == config.randomVariant
+                && this.speed == config.speed
+                && this.fade == config.fade
+                && this.tick == config.tick;
+        }
+
+        return false;
     }
 
     @Override

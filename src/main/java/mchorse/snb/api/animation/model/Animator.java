@@ -13,6 +13,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Animator class
@@ -317,7 +318,7 @@ public class Animator implements IAnimator
      */
     public void setActiveAction(ActionPlayback action)
     {
-        if (this.active == action || action == null)
+        if (Objects.equals(this.active, action) || action == null)
         {
             return;
         }
