@@ -4,6 +4,7 @@ import mchorse.mclib.utils.resources.RLUtils;
 import mchorse.snb.api.animation.model.ActionConfig;
 import mchorse.snb.api.animation.model.ActionPlayback;
 import mchorse.snb.api.bobj.BOBJAction;
+import mchorse.snb.api.bobj.BOBJArmature;
 import mchorse.snb.api.bobj.BOBJLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.relauncher.Side;
@@ -11,9 +12,12 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL15;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Animation class
@@ -158,5 +162,17 @@ public class Animation
         /* Unbind the buffer. REQUIRED to avoid OpenGL crash */
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
         GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, 0);
+    }
+
+    public Collection<String> collectBones()
+    {
+        Set<String> set = new HashSet<String>();
+
+        for (BOBJArmature armature : this.data.armatures.values())
+        {
+            set.addAll(armature.bones.keySet());
+        }
+
+        return set;
     }
 }

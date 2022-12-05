@@ -28,6 +28,7 @@ import org.lwjgl.opengl.GL11;
 import javax.vecmath.Matrix4f;
 import javax.vecmath.Vector4f;
 import java.nio.FloatBuffer;
+import java.util.Collection;
 
 @SideOnly(Side.CLIENT)
 public class AnimatorController
@@ -149,7 +150,7 @@ public class AnimatorController
             player.rotationYawHead = player.prevRotationYawHead = 0;
             player.rotationPitch = player.prevRotationPitch = 0;
 
-            this.renderAnimation(player, this.animation.meshes.get(0), 0, 0);
+            this.renderAnimation(player, 0, 0);
 
             player.rotationYawHead = yaw;
             player.prevRotationYawHead = prevYaw;
@@ -220,7 +221,7 @@ public class AnimatorController
                 GL11.glRotatef(180 - (yaw - 180), 0.0F, 1.0F, 0.0F);
             }
 
-            this.renderAnimation(entity, this.animation.meshes.get(0), yaw, partialTicks);
+            this.renderAnimation(entity, yaw, partialTicks);
 
             if (captured) MatrixUtils.releaseMatrix();
 
@@ -248,9 +249,10 @@ public class AnimatorController
     /**
      * Render current animation
      */
-    public void renderAnimation(EntityLivingBase entity, AnimationMesh mesh, float yaw, float partialTicks)
+    public void renderAnimation(EntityLivingBase entity, float yaw, float partialTicks)
     {
-        BOBJArmature armature = mesh.armature;
+        Collection<BOBJArmature> armatures = this.animation.data.armatures.values();
+
         float alpha = 1;
 
         if (entity.isInvisible())
@@ -258,7 +260,10 @@ public class AnimatorController
             alpha = !entity.isInvisibleToPlayer(Minecraft.getMinecraft().player) ? 0.15F : 0;
         }
 
-        this.setupBoneMatrices(entity, armature, yaw, partialTicks);
+        for (BOBJArmature armature : armatures)
+        {
+            this.setupBoneMatrices(entity, armature, yaw, partialTicks);
+        }
 
         for (AnimationMesh part : this.animation.meshes)
         {
@@ -275,8 +280,11 @@ public class AnimatorController
         if (flag) RenderLightmap.unset();
         GlStateManager.disableRescaleNormal();
 
-        this.renderItems(entity, armature);
-        this.renderHead(entity, armature.bones.get(this.userConfig.head));
+        for (BOBJArmature armature : armatures)
+        {
+            this.renderItems(entity, armature);
+            this.renderHead(entity, armature.bones.get(this.userConfig.head));
+        }
     }
 
     public void setupBoneMatrices(EntityLivingBase entity, BOBJArmature armature, float yaw, float partialTicks)

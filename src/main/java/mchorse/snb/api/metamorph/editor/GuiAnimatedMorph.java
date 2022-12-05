@@ -93,7 +93,7 @@ public class GuiAnimatedMorph extends GuiAbstractMorph<AnimatedMorph>
         morph.parts.initBodyParts();
         morph.initiateAnimator();
         this.userConfig = new AnimatorConfig();
-        this.bodyPart.setLimbs(morph.animator.animation.meshes.get(0).armature.bones.keySet());
+        this.bodyPart.setLimbs(morph.animator.animation.collectBones());
         this.model.controller = morph.animator;
 
         if (morph.userConfigData != null && !morph.userConfigData.hasNoTags())

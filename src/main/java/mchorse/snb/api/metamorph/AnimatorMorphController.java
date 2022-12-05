@@ -2,7 +2,6 @@ package mchorse.snb.api.metamorph;
 
 import mchorse.mclib.utils.Interpolations;
 import mchorse.metamorph.bodypart.BodyPart;
-import mchorse.snb.api.animation.AnimationMesh;
 import mchorse.snb.api.animation.model.AnimatorController;
 import mchorse.snb.api.animation.model.AnimatorPoseTransform;
 import mchorse.snb.api.bobj.BOBJArmature;
@@ -29,34 +28,35 @@ public class AnimatorMorphController extends AnimatorController
     }
 
     @Override
-    public void renderAnimation(EntityLivingBase entity, AnimationMesh mesh, float yaw, float partialTicks)
+    public void renderAnimation(EntityLivingBase entity, float yaw, float partialTicks)
     {
-        super.renderAnimation(entity, mesh, yaw, partialTicks);
+        super.renderAnimation(entity, yaw, partialTicks);
 
-        this.renderBodyParts(entity, mesh, yaw, partialTicks);
+        this.renderBodyParts(entity, yaw, partialTicks);
     }
 
-    protected void renderBodyParts(EntityLivingBase entity, AnimationMesh mesh, float yaw, float partialTicks)
+    protected void renderBodyParts(EntityLivingBase entity, float yaw, float partialTicks)
     {
         /* Render body part */
-        BOBJArmature armature = mesh.armature;
-
-        for (BodyPart part : this.morph.parts.parts)
+        for (BOBJArmature armature : this.animation.data.armatures.values())
         {
-            BOBJBone bone = armature.bones.get(part.limb);
-
-            if (bone != null)
+            for (BodyPart part : this.morph.parts.parts)
             {
-                GL11.glPushMatrix();
-                this.setupMatrix(bone);
-                part.render(this.morph, entity, partialTicks);
-                GL11.glPopMatrix();
-            }
+                BOBJBone bone = armature.bones.get(part.limb);
 
-            /* I hope this won't affect performance too much, but it's
-             * necessary because it restores animation data if the body
-             * part is an animated morph that uses the same animation */
-            this.setupBoneMatrices(entity, armature, yaw, partialTicks);
+                if (bone != null)
+                {
+                    GL11.glPushMatrix();
+                    this.setupMatrix(bone);
+                    part.render(this.morph, entity, partialTicks);
+                    GL11.glPopMatrix();
+                }
+
+                /* I hope this won't affect performance too much, but it's
+                 * necessary because it restores animation data if the body
+                 * part is an animated morph that uses the same animation */
+                this.setupBoneMatrices(entity, armature, yaw, partialTicks);
+            }
         }
     }
 
