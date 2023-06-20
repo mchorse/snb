@@ -1,3 +1,12 @@
+## Version 1.4.2
+
+This update was made by McHorse.
+
+**Compatible** with McLib `2.4.1` and Metamorph `1.3.1`. It doesn't mean that future versions of McLib, Blockbuster and Metamorph would be incompatible, but older versions are most likely incompatible.
+
+* Added support for float keyframes
+* Added support for animating multiple armatures
+
 ## Version 1.4.1
 
 This update was made by Chryfi and MiaoNLI.
