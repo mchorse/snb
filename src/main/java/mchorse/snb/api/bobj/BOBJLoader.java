@@ -479,12 +479,14 @@ public class BOBJLoader
             {
                 Weight w = it.next();
 
-                if (w.factor < 0.05)
+                if (w.factor < 0.02)
                 {
                     it.remove();
                 }
             }
 
+            /*
+            This breaks weight maps where the sum is not 1 and where a non linear weight gradient is desired.
             if (this.weights.size() > 0)
             {
                 float weight = 0;
@@ -498,7 +500,7 @@ public class BOBJLoader
                 {
                     this.weights.get(weights.size() - 1).factor += 1 - weight;
                 }
-            }
+            }*/
 
             data.maxWeights = Math.max(data.maxWeights, this.weights.size());
         }
