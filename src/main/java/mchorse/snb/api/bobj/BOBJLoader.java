@@ -479,7 +479,7 @@ public class BOBJLoader
             {
                 Weight w = it.next();
 
-                if (w.factor < 0.02)
+                if (w.factor < 0.0001F)
                 {
                     it.remove();
                 }
