@@ -64,6 +64,11 @@ public class AnimationMeshConfigAdapter implements JsonDeserializer<AnimationMes
             config.color = object.get("color").getAsInt();
         }
 
+        if (object.has("sharpBending"))
+        {
+            config.sharpBending = object.get("sharpBending").getAsBoolean();
+        }
+
         return config;
     }
 
@@ -80,6 +85,7 @@ public class AnimationMeshConfigAdapter implements JsonDeserializer<AnimationMes
         object.addProperty("visible", src.visible);
         object.addProperty("lighting", src.lighting);
         object.addProperty("color", src.color);
+        object.addProperty("sharpBending", src.sharpBending);
 
         return object;
     }

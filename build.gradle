@@ -1,67 +1,93 @@
-buildscript 
-{
-    repositories 
-    {
-        jcenter()
-        maven { url = "http://files.minecraftforge.net/maven" }
+buildscript {
+    repositories {
+        maven { url = 'https://maven.minecraftforge.net/' }
+        mavenCentral()
     }
-    
-    dependencies 
-    {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
+    dependencies {
+        classpath 'net.minecraftforge.gradle:ForgeGradle:3.+'
     }
 }
 
-apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: 'net.minecraftforge.gradle'
+apply plugin: 'eclipse'
+apply plugin: 'maven-publish'
 
-group = "mchorse.skin_n_bones"
-archivesBaseName = "skin_n_bones"
-sourceCompatibility = targetCompatibility = "1.8"
+version = '1.4.2-1.12.2'
+group = 'mchorse.skin_n_bones'
+archivesBaseName = 'skin_n_bones'
 
-if (project.hasProperty("dev")) 
-{
-    version += "-dev" + dev
+sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
+
+minecraft {
+    mappings channel: 'snapshot', version: '20171003-1.12'
+
+    runs {
+        client {
+            workingDirectory project.file('run')
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+            property 'forge.logging.console.level', 'debug'
+
+            jvmArgs '-Xmx1G'
+        }
+
+        server {
+            workingDirectory project.file('run')
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+            property 'forge.logging.console.level', 'debug'
+
+            jvmArgs '-Xmx1G'
+        }
+    }
 }
 
-compileJava 
-{
-    sourceCompatibility = targetCompatibility = "1.8"
+repositories {
+    maven {
+        url = "https://cursemaven.com"
+    }
 }
 
-minecraft 
-{
-    version = "${mc_version}-${forge_version}"
-    runDir = "run"
-    mappings = snapshot
-    
-    clientJvmArgs = ["-Xmx1G"]
-    serverJvmArgs = ["-Xmx1G"]
-    
-    replace "%VERSION%", project.version
-    replace "%MCLIB%", project.mclib
-    replace "%METAMORPH%", project.metamorph
+dependencies {
+    minecraft 'net.minecraftforge:forge:1.12.2-14.23.5.2860'
+
+    // External mod dependencies (dev jars, not recommended in prod)
+    implementation fg.deobf("curse.maven:mchorses-mclib-304750:5440933")
+    implementation fg.deobf("curse.maven:metamorph-256932:5440927")
 }
 
-dependencies 
-{
-    compile files("run/libs/metamorph-${metamorph}-${project.minecraft.version}-dev.jar")
-    compile files("run/libs/mclib-${mclib}-${project.minecraft.version}-dev.jar")
+jar {
+    manifest {
+        attributes([
+                "Specification-Title"     : "Skin n Bones",
+                "Specification-Vendor"    : "mchorse",
+                "Specification-Version"   : "1",
+                "Implementation-Title"    : project.name,
+                "Implementation-Version"  : "${version}",
+                "Implementation-Vendor"   : "mchorse",
+                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+        ])
+    }
+
+    finalizedBy('reobfJar')
 }
 
-processResources
-{
+processResources {
     inputs.property "version", project.version
-    inputs.property "mcversion", project.minecraft.version
+    inputs.property "mcversion", "1.12.2"
 
-    project.version += "-" + project.minecraft.version
-
-    from(sourceSets.main.resources.srcDirs) {
-        include 'mcmod.info'
-                
-        expand 'version':project.version, 'mcversion':project.minecraft.version
+    filesMatching('mcmod.info') {
+        expand 'version': project.version, 'mcversion': "1.12.2"
     }
-        
-    from(sourceSets.main.resources.srcDirs) {
-        exclude 'mcmod.info'
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifact jar
+        }
+    }
+    repositories {
+        maven {
+            url "file:///${project.projectDir}/mcmodsrepo"
+        }
     }
 }

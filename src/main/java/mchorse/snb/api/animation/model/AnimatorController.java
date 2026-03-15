@@ -268,7 +268,7 @@ public class AnimatorController
         for (AnimationMesh part : this.animation.meshes)
         {
             part.alpha = alpha;
-            part.updateMesh();
+            part.updateMesh(this.userConfig.meshes.get(part.name));
         }
 
         /* Hurt colors */

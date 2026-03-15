@@ -51,6 +51,11 @@ public class AnimationMeshConfig
     public int color = 0xffffff;
 
     /**
+     * Whether to use sharp bending for joints
+     */
+    public boolean sharpBending = false;
+
+    /**
      * Clone this object 
      */
     @Override
@@ -65,6 +70,7 @@ public class AnimationMeshConfig
         config.visible = this.visible;
         config.lighting = this.lighting;
         config.color = this.color;
+        config.sharpBending = this.sharpBending;
 
         return config;
     }
@@ -108,6 +114,11 @@ public class AnimationMeshConfig
         {
             this.color = tag.getInteger("Color");
         }
+
+        if (tag.hasKey("SharpBending", NBT.TAG_ANY_NUMERIC))
+        {
+            this.sharpBending = tag.getBoolean("SharpBending");
+        }
     }
 
     public NBTTagCompound toNBT(NBTTagCompound tag)
@@ -124,6 +135,7 @@ public class AnimationMeshConfig
         tag.setBoolean("Visible", this.visible);
         tag.setBoolean("Lighting", this.lighting);
         tag.setInteger("Color", this.color);
+        tag.setBoolean("SharpBending", this.sharpBending);
 
         return tag;
     }

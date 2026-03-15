@@ -1,6 +1,7 @@
 package mchorse.snb.api.animation;
 
 import mchorse.mclib.client.render.VertexBuilder;
+import mchorse.mclib.utils.MathUtils;
 import mchorse.snb.api.bobj.BOBJArmature;
 import mchorse.snb.api.bobj.BOBJBone;
 import mchorse.snb.api.bobj.BOBJLoader;
@@ -23,6 +24,8 @@ import javax.vecmath.Vector3f;
 import javax.vecmath.Vector4f;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Animation mesh class
@@ -67,6 +70,18 @@ public class AnimationMesh
      */
     public float alpha = 1F;
 
+    /* Sharp bending joints */
+    public Joint armLeft;
+    public Joint armRight;
+    public Joint legLeft;
+    public Joint legRight;
+    public Joint body;
+
+    /**
+     * Current mesh configuration
+     */
+    private AnimationMeshConfig currentConfig;
+
     /* Buffers */
     public FloatBuffer vertices;
     public FloatBuffer normals;
@@ -90,6 +105,45 @@ public class AnimationMesh
         this.armature.initArmature();
 
         this.initBuffers();
+        this.initJoints();
+    }
+
+    /**
+     * Initialize sharp bending joints
+     */
+    private void initJoints()
+    {
+        BOBJBone leftArm = this.armature.bones.get("left_arm");
+        BOBJBone lowLeftArm = this.armature.bones.get("low_left_arm");
+        BOBJBone rightArm = this.armature.bones.get("right_arm");
+        BOBJBone lowRightArm = this.armature.bones.get("low_right_arm");
+        BOBJBone leftLeg = this.armature.bones.get("left_leg");
+        BOBJBone lowLeftLeg = this.armature.bones.get("low_left_leg");
+        BOBJBone rightLeg = this.armature.bones.get("right_leg");
+        BOBJBone lowRightLeg = this.armature.bones.get("low_leg_right");
+        BOBJBone bodyBone = this.armature.bones.get("body");
+        BOBJBone lowBody = this.armature.bones.get("low_body");
+
+        if (leftArm != null && lowLeftArm != null)
+        {
+            this.armLeft = new Joint(leftArm, lowLeftArm);
+        }
+        if (rightArm != null && lowRightArm != null)
+        {
+            this.armRight = new Joint(rightArm, lowRightArm);
+        }
+        if (leftLeg != null && lowLeftLeg != null)
+        {
+            this.legLeft = new Joint(leftLeg, lowLeftLeg);
+        }
+        if (rightLeg != null && lowRightLeg != null)
+        {
+            this.legRight = new Joint(rightLeg, lowRightLeg);
+        }
+        if (bodyBone != null && lowBody != null)
+        {
+            this.body = new Joint(bodyBone, lowBody);
+        }
     }
 
     /**
@@ -176,6 +230,14 @@ public class AnimationMesh
      */
     public void updateMesh()
     {
+        this.updateMesh(this.currentConfig);
+    }
+
+    /**
+     * Update this mesh with a specific config
+     */
+    public void updateMesh(AnimationMeshConfig config)
+    {
         int max = this.data.maxWeights;
 
         Vector4f sumVertex = new Vector4f();
@@ -242,9 +304,98 @@ public class AnimationMesh
             resultNormal.set(0, 0, 0);
         }
 
+        // Apply sharp bending if enabled
+        if (config != null && config.sharpBending)
+        {
+            this.processSharpBending(newVertices, newNormals);
+        }
+
         this.updateVertices(newVertices);
         this.updateNormals(newNormals);
         this.updateTangent(newVertices, newNormals);
+    }
+
+    /**
+     * Process sharp bending for joints
+     */
+    private void processSharpBending(float[] newVertices, float[] newNormals)
+    {
+        if (this.armLeft != null && !this.armLeft.isFilled())
+        {
+            float rmn1 = 22 / 64F;
+            float rmx1 = 30 / 64F;
+            float rmn2 = 54 / 64F;
+            float rmx2 = 62 / 64F;
+            float rmn3 = 38 / 64F;
+            float rmx3 = 46 / 64F;
+
+            for (int i = 0, c = this.data.posData.length / 4; i < c; i++)
+            {
+                double v = this.data.texData[i * 2 + 1];
+                JointType type = JointType.NONE;
+
+                for (int j = 0; j < this.data.maxWeights; j++)
+                {
+                    int boneIndex = this.data.boneIndexData[i * this.data.maxWeights + j];
+
+                    if (boneIndex == -1)
+                    {
+                        continue;
+                    }
+
+                    BOBJBone bone = this.armature.orderedBones.get(boneIndex);
+
+                    if (bone.name.contains("leg"))
+                    {
+                        type = JointType.LEG;
+                    }
+                    else if (bone.name.contains("arm"))
+                    {
+                        type = JointType.ARM;
+                    }
+                    else if (bone.name.contains("body"))
+                    {
+                        type = JointType.BODY;
+                    }
+
+                    if (type != JointType.NONE)
+                    {
+                        break;
+                    }
+                }
+
+                if (((v >= rmn1 && v <= rmx1) || (v >= rmn2 && v <= rmx2) || (v >= rmn3 && v <= rmx3)) && type != JointType.NONE)
+                {
+                    float z = this.data.posData[i * 4 + 2];
+                    Joint joint;
+
+                    if (type == JointType.BODY)
+                    {
+                        joint = this.body;
+                    }
+                    else if (v > 3 / 4F)
+                    {
+                        joint = type == JointType.LEG ? this.legLeft : this.armLeft;
+                    }
+                    else
+                    {
+                        joint = type == JointType.LEG ? this.legRight : this.armRight;
+                    }
+
+                    if (joint != null)
+                    {
+                        List<Integer> list = z < 0 ? joint.back : joint.front;
+                        list.add(i);
+                    }
+                }
+            }
+        }
+
+        if (this.armRight != null) this.armRight.process(this.data, this.armature, newVertices, newNormals);
+        if (this.armLeft != null) this.armLeft.process(this.data, this.armature, newVertices, newNormals);
+        if (this.legRight != null) this.legRight.process(this.data, this.armature, newVertices, newNormals);
+        if (this.legLeft != null) this.legLeft.process(this.data, this.armature, newVertices, newNormals);
+        if (this.body != null) this.body.process(this.data, this.armature, newVertices, newNormals);
     }
 
     /**
@@ -345,6 +496,8 @@ public class AnimationMesh
      */
     public void render(Minecraft mc, AnimationMeshConfig config)
     {
+        this.currentConfig = config;
+        
         if (config != null && (!config.visible || this.alpha <= 0))
         {
             return;
@@ -508,5 +661,107 @@ public class AnimationMesh
         }
 
         return config.texture == null ? this.texture : config.texture;
+    }
+
+    /**
+     * Joint class for sharp bending
+     */
+    public static class Joint
+    {
+        public static Vector4f temporary = new Vector4f();
+
+        public List<Integer> front = new ArrayList<Integer>();
+        public List<Integer> back = new ArrayList<Integer>();
+        public BOBJBone top;
+        public BOBJBone joint;
+
+        public Joint(BOBJBone top, BOBJBone joint)
+        {
+            this.top = top;
+            this.joint = joint;
+        }
+
+        public boolean isFilled()
+        {
+            return !this.front.isEmpty();
+        }
+
+        public void process(BOBJLoader.CompiledData data, BOBJArmature armature, float[] posData, float[] normalData)
+        {
+            final float pi = (float) Math.PI;
+
+            float rotation = this.joint.rotateX;
+            float frontFactor = MathUtils.clamp((rotation + pi / 2F) / pi, 0, 1);
+            float backFactor = 1 - frontFactor;
+
+            this.processSide(data, armature, this.front, posData, normalData, frontFactor);
+            this.processSide(data, armature, this.back, posData, normalData, backFactor);
+        }
+
+        protected void processSide(BOBJLoader.CompiledData data, BOBJArmature armature, List<Integer> indices, float[] posData, float[] normalData, float factor)
+        {
+            int prevIndex = 0;
+
+            for (int i : indices)
+            {
+                float x = data.posData[i * 4];
+                float y = data.posData[i * 4 + 1] + factor * 4 / 16F - 2 / 16F;
+                float z = data.posData[i * 4 + 2];
+
+                temporary.set(x, y, z, 1);
+                armature.matrices[this.top.index].transform(temporary);
+
+                posData[i * 4] = temporary.x;
+                posData[i * 4 + 1] = temporary.y;
+                posData[i * 4 + 2] = temporary.z;
+                posData[i * 4 + 3] = temporary.w;
+
+                /* Copying the normal from the third/second side */
+                int base = i - i % 3;
+                int a = i - base;
+                int b = prevIndex - base;
+                int c = 0;
+
+                if (b >= 0)
+                {
+                    /* If previous normal is from the same triangle, there is a need
+                     * to figure out what is the third vertex is */
+                    if ((a == 0 && b == 2) || (b == 0 && a == 2))
+                    {
+                        c = 1;
+                    }
+                    else if ((a == 0 && b == 1) || (b == 0 && a == 1))
+                    {
+                        c = 2;
+                    }
+                }
+                else
+                {
+                    /* If there is only one transformed sharpened joint, then we
+                     * can take just any as long as it's not the same as current index */
+                    c = a == 1 ? 0 : 1;
+                }
+
+                c += base;
+
+                normalData[i * 3] = normalData[c * 3];
+                normalData[i * 3 + 1] = normalData[c * 3 + 1];
+                normalData[i * 3 + 2] = normalData[c * 3 + 2];
+
+                if (b >= 0)
+                {
+                    normalData[prevIndex * 3] = normalData[c * 3];
+                    normalData[prevIndex * 3 + 1] = normalData[c * 3 + 1];
+                    normalData[prevIndex * 3 + 2] = normalData[c * 3 + 2];
+                }
+
+                prevIndex = i;
+            }
+        }
+    }
+
+    public enum JointType
+    {
+        LEG, ARM, BODY, NONE
     }
 }
