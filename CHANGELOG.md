@@ -1,3 +1,11 @@
+## Version 1.4.3
+
+This update was made by Chryfi.
+
+**Compatible** with McLib `2.4.1` and Metamorph `1.3.1`. It doesn't mean that future versions of McLib, Blockbuster and Metamorph would be incompatible, but older versions are most likely incompatible.
+
+* Fixed non linear weight maps not working, because the sum of the weights per vertex was raised to 1.
+
 ## Version 1.4.2
 
 This update was made by McHorse.
